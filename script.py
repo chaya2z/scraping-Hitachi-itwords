@@ -18,25 +18,34 @@ def main():
             print(index_url)
             words_url = load_words_title(index_url)
             for a_word in words_url:
-                time.sleep(10)
                 print(load_words_details(a_word))
+                time.sleep(10)  # time until loading next term
     else:
         print("Bye")
 
 
 def convert_html(target_url):
+    """
+    Load a HTML and format it to HTML.
+    :param target_url: All URL used in this scraping tool.
+    :return:HTML made by requests and Beautifulsoup4.
+    """
     while True:
         try:
             r = requests.get(url=target_url, headers=headers, timeout=30)
-            r.raise_for_status()  # Check status-code response from server. If not 200, stop scraping.
+            r.raise_for_status()  # Check status-code. If not 200, return error.
             soup = BeautifulSoup(r.content, "html.parser")
             return soup
-            break
         except Timeout:
             convert_html(target_url)
 
 
 def load_index_urls(target_html):
+    """
+     This function loads HTML from https://it-words.jp/ only first.
+    :param target_html: https://it-words.jp/
+    :return: URL list of term's index
+    """
     targetURLs = []
 
     result = target_html.find("div", class_="menuList_inner").select("a")
@@ -48,6 +57,11 @@ def load_index_urls(target_html):
 
 
 def load_words_title(target_url):
+    """
+    By using index-URL, this function loads URL each a term.
+    :param target_url: An index URL loaded index oad_index_urls function
+    :return: A URL list of an index loaded load_index_urls function
+    """
     soup = convert_html(target_url)
     target_urls = []
 
@@ -59,14 +73,19 @@ def load_words_title(target_url):
 
 
 def load_words_details(target_url):
+    """
+    This function loads a summary of a term.
+    :param target_url: A term's URL
+    :return: A term's summary
+    """
     soup = convert_html(target_url)
 
     term_title = soup.h1.string
     print(term_title)
 
-    targetWordExplanation = soup.find("div", class_="entryBody").text
+    targetWordSummary = soup.find("div", class_="entryBody").text
 
-    return targetWordExplanation
+    return targetWordSummary
 
 
 if __name__ == "__main__":
