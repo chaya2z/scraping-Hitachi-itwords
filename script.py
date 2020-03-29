@@ -1,10 +1,12 @@
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import time
 from requests.exceptions import Timeout
 
 # header
-headers = {"User-Agent": ""}
+headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"}
 
 # To load index
 primary_link = "https://it-words.jp/"
@@ -19,7 +21,9 @@ def main():
             words_url = load_words_title(index_url)
             for a_word in words_url:
                 print(load_words_details(a_word))
-                time.sleep(10)  # time until loading next term
+                time.sleep(60)  # time until loading next term
+            else:
+                print(words_url)
     else:
         print("Bye")
 
@@ -32,12 +36,19 @@ def convert_html(target_url):
     """
     while True:
         try:
-            r = requests.get(url=target_url, headers=headers, timeout=30)
+            r = requests.get(url=target_url, headers=headers, timeout=1)
             r.raise_for_status()  # Check status-code. If not 200, return error.
             soup = BeautifulSoup(r.content, "html.parser")
-            return soup
         except Timeout:
+            time.sleep(30)
+            session = requests.Session()
+            retry = Retry(connect=3, backoff_factor=0.5)
+            adapter = HTTPAdapter(max_retries=retry)
+            session.mount('http://', adapter)
+            session.mount('https://', adapter)
             convert_html(target_url)
+        else:
+            return soup
 
 
 def load_index_urls(target_html):
@@ -67,6 +78,7 @@ def load_words_title(target_url):
 
     terms_table = soup.find("table", class_="term").select("a")
     for i in terms_table:
+        print(i.text)
         target_urls.append(i.get("href"))
 
     return target_urls
@@ -81,12 +93,15 @@ def load_words_details(target_url):
     soup = convert_html(target_url)
 
     term_title = soup.h1.string
-    print(term_title)
-
-    targetWordSummary = soup.find("div", class_="entryBody").text
+    if term_title == "ただ今メンテナンス中です":
+        targetWordSummary = "ERROR:page maintenance\nこの記事は取得できませんでした"
+    else:
+        print(term_title)
+        targetWordSummary = soup.find("div", class_="entryBody").text
 
     return targetWordSummary
 
 
 if __name__ == "__main__":
     main()
+    print("Success")
