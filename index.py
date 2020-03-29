@@ -22,7 +22,15 @@ else:
         wordURL = i.get("href")
         targetURLs.append(wordURL)
 
-    print(targetURLs)
+    r = requests.get(url=targetURLs[0], headers=headers)
+    html = r.content
+    soup = BeautifulSoup(html, "html.parser")
+
+    targetWord = soup.h1.string
+    print(targetWord)
+
+    targetWordExplanation = soup.find("div", class_="entryBody").text  # .find_all("p")
+    print(targetWordExplanation)
 
     print(r.url + "のスクレイピングを行いました．")
     print("ステータスコード：", r.status_code)
