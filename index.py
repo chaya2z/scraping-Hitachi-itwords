@@ -29,6 +29,7 @@ else:
     targetWord = soup.h1.string
     print(targetWord)
 
+    print(soup.find("div", class_="entryBody"))
     targetWordExplanation = soup.find("div", class_="entryBody").text  # .find_all("p")
     print(targetWordExplanation)
 
