@@ -7,7 +7,7 @@ This script can scraping "日立ソリューションズ IT用語辞典(HITACHI 
 ## How to use
 
 First, give your User-agent into headers(line:7, in script.py).
-I use this site:http://www.useragentstring.com/.
+I use this page:http://www.useragentstring.com/ .
 
 Second, start scraping.
 ```
