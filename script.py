@@ -87,7 +87,7 @@ def load_words_details(target_url):
 
     term_title = soup.h1.string
     if term_title == "ただ今メンテナンス中です":
-        targetWordSummary = "ERROR:page maintenance\nCan not get summary."
+        targetWordSummary = "ERROR:page maintenance\nFailed to load summary."
     else:
         print(term_title)
         targetWordSummary = soup.find("div", class_="entryBody").text
