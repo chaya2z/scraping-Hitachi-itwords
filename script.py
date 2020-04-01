@@ -29,7 +29,7 @@ def main():
 def convert_html(target_url):
     """
     Load a HTML and format it to HTML.
-    :param target_url: All URL used in this scraping tool.
+    :param target_url: All URL to use in this scraping tool.
     :return:HTML made by requests and Beautifulsoup4.
     """
     while True:
